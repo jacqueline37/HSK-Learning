@@ -199,7 +199,7 @@ table.bd td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-w
 .set label,.set .item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule)}
 .set>:last-child{border-bottom:0}
 .set small{display:block;color:var(--muted);font-size:12px}
-.set select{max-width:55%;padding:8px;border-radius:var(--r);border:1.5px solid var(--line);background:var(--sheet);color:var(--ink);font-size:14px}
+.set select{max-width:55%;min-height:40px;padding:8px;border-radius:var(--r);border:1.5px solid var(--line);background:var(--sheet);color:var(--ink);font-size:14px}
 .set input[type=checkbox]{width:22px;height:22px;accent-color:var(--ink)}
 .set input[type=range]{width:45%;accent-color:var(--ink)}
 .set .btn{min-height:40px;padding:8px 16px}
@@ -214,6 +214,10 @@ table.bd td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-w
   .bigpic{font-size:80px}
   .opts.pics{gap:8px}
   .opts.pics .pic{font-size:44px}
+  .opts.pics .opt{padding:28px 4px 10px}
+  .opts.pics .opt .k{top:5px;left:5px;width:22px;height:22px;font-size:12px}
+  .set label:has(select){flex-direction:column;align-items:stretch;gap:8px}
+  .set label:has(select) select{max-width:none}
   .zh.big{font-size:34px}
   .more{grid-template-columns:1fr}
   .qbox{padding:18px 14px}
