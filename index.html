@@ -5,20 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HSK1級 練習ドリル</title>
 <meta name="description" content="旧HSK1級（150語）のリスニング・リーディング対策。音声付きの練習問題、本番形式の模擬試験（40問・200点満点）、単語帳。PC・スマホ・タブレット対応。">
-<meta name="theme-color" content="#c8102e">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HSK1級 練習ドリル">
+<meta property="og:description" content="旧HSK1級（150語）のリスニング・リーディング対策。音声付きの練習問題と本番形式の模擬試験。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#eef1ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11151d" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Serif+SC:wght@500;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="top">
-  <a class="logo" href="#/" data-nav="#/"><span class="logo-mark">汉</span> HSK1 ドリル</a>
-  <nav>
+  <a class="logo" href="#/" data-nav="#/"><span class="logo-mark" lang="zh-Hans" aria-hidden="true">汉</span>HSK1 ドリル</a>
+  <nav aria-label="メイン">
     <a href="#/words" data-nav="#/words">単語帳</a>
     <a href="#/settings" data-nav="#/settings">設定</a>
   </nav>
 </header>
-<main id="app" aria-live="polite"></main>
-<footer class="foot">旧HSK1級（150語）対応 ・ 音声：Microsoft Edge TTS（Xiaoxiao / Yunxi）で生成</footer>
+<main id="app"></main>
+<footer class="foot">旧HSK1級（150語）対応。音声は Microsoft Edge TTS（Xiaoxiao／Yunxi）で生成しています。</footer>
 <script src="js/data.js"></script>
 <script src="js/audio-map.js"></script>
 <script src="js/app.js"></script>
