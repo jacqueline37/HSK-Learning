@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- OGP画像（1200x630）の元。描き直すとき：
+     msedge --headless --hide-scrollbars --window-size=1200,630 --screenshot=ogp.png tools/ogp.html -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Serif+SC:wght@500;700&display=block">
+<style>
+  :root{--paper:#eef1ec;--sheet:#fbfcfa;--ink:#1e2740;--muted:#566074;--line:#c9d0c6;--rule:#dde2da;--pen:#cc2f2a}
+  *{box-sizing:border-box;margin:0}
+  html,body{width:1200px;height:630px;overflow:hidden}
+  body{background:var(--paper);color:var(--ink);font-family:"BIZ UDPGothic",sans-serif;
+    display:grid;grid-template-columns:1fr 470px;gap:64px;align-items:center;padding:0 80px}
+  .zh{font-family:"Noto Serif SC",serif}
+  .mark{display:grid;place-items:center;width:72px;height:72px;border-radius:8px;background:var(--ink);color:var(--paper);
+    font-size:44px;font-weight:700;margin-bottom:36px}
+  h1{font-size:84px;line-height:1.18;font-weight:700;letter-spacing:.01em}
+  .sub{margin-top:26px;font-size:30px;line-height:1.5;color:var(--muted)}
+  .sheet{position:relative;background:var(--sheet);border:2px solid var(--ink);border-radius:8px;padding:30px 34px 34px;transform:rotate(1.5deg)}
+  .q{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;color:var(--muted)}
+  .q b{color:var(--ink);font-size:24px}
+  .seg{display:flex;gap:5px;margin:12px 0 26px}
+  .seg i{flex:1;height:7px;background:var(--rule);border-radius:2px}
+  .seg i.done{background:var(--ink)}
+  .ask{font-size:46px;font-weight:700;text-align:center;margin-bottom:26px}
+  .opt{position:relative;display:flex;align-items:center;gap:22px;border:2px solid var(--line);border-radius:6px;
+    padding:14px 20px;margin-top:14px;font-size:34px}
+  .k{display:grid;place-items:center;width:42px;height:42px;border:2px solid var(--ink);border-radius:4px;font-size:22px;font-weight:700}
+  .py{font-size:20px;color:var(--muted);margin-left:auto}
+  svg{position:absolute;inset:-14px -16px;width:calc(100% + 32px);height:calc(100% + 28px);overflow:visible}
+  svg path{fill:none;stroke:var(--pen);stroke-width:4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+</style>
+</head>
+<body>
+  <div>
+    <div class="mark zh">汉</div>
+    <h1>HSK1級<br>練習ドリル</h1>
+    <p class="sub">旧HSK1級150語の<br>リスニングと読解を、音声付きで。</p>
+  </div>
+  <div class="sheet">
+    <div class="q"><span>リーディング 第3部分</span><b>3 / 10</b></div>
+    <div class="seg"><i class="done"></i><i class="done"></i><i class="done"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="ask zh">你叫什么名字？</p>
+    <div class="opt"><span class="k">A</span><span class="zh">我很好。</span></div>
+    <div class="opt"><span class="k">B</span><span class="zh">我叫李月。</span>
+      <svg viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M57 3 C82 1 99 9 98 21 C97 34 72 39 47 38 C20 37 2 31 2 19 C3 8 24 2 52 2 C60 2 66 3 70 5"/></svg>
+    </div>
+    <div class="opt"><span class="k">C</span><span class="zh">谢谢你。</span></div>
+  </div>
+</body>
+</html>
