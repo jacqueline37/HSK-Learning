@@ -4,7 +4,7 @@ const LS = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
-const settings = Object.assign({ pinyin: true, rate: 0.8, twice: false, voice: '' }, LS.get('hsk1_settings', {}));
+const settings = Object.assign({ pinyin: true, rate: 0.8, twice: false, voice: '', theme: 'mix' }, LS.get('hsk1_settings', {}));
 const saveSettings = () => LS.set('hsk1_settings', settings);
 
 /* ========== 小道具 ========== */
@@ -163,7 +163,7 @@ function genSentQ(part, i) {
 }
 function genQA(part, i) {
   const it = QA[i];
-  const others = shuffle(QA.filter((_, k) => k !== i)).slice(0, 2);
+  const others = shuffle(QA.filter((x, k) => k !== i && !x.ak === !it.ak)).slice(0, 2); // 同じテーマの答えから選ぶ（人名で正解がバレないように）
   return {
     part, key: i, kind: 'text',
     audio: null,
@@ -185,15 +185,17 @@ function genFill(part, i) {
   };
 }
 const idx = n => Array.from({ length: n }, (_, i) => i);
+// 例文テーマ（設定）に合う問題の番号だけを返す  std=ふつう ak=アークナイツ mix=両方
+const pool = list => idx(list.length).filter(i => settings.theme === 'mix' || (settings.theme === 'ak') === !!list[i].ak);
 const PARTS = {
   L1: { sec: 'L', no: 1, name: '判断（単語）', desc: '単語を聞き、絵と合っていれば ✓、違えば ✗', inst: '音声を聞いて、絵と合っていれば ✓、違えば ✗ を選んでください。', keys: () => picWords.map(w => w.h), gen: k => genJudge('L1', k, true) },
-  L2: { sec: 'L', no: 2, name: '絵を選ぶ（文）', desc: '文を聞いて、合う絵を選ぶ', inst: '音声を聞いて、内容に合う絵を選んでください。', keys: () => idx(SENT_PIC.length), gen: k => genSentPic('L2', k, true) },
-  L3: { sec: 'L', no: 3, name: '会話と絵', desc: '短い会話を聞いて、合う絵を選ぶ', inst: '会話を聞いて、内容に合う絵を選んでください。', keys: () => idx(DIALOG_PIC.length), gen: k => genDialog('L3', k) },
-  L4: { sec: 'L', no: 4, name: '質問に答える', desc: '文と質問を聞いて、答えを選ぶ', inst: '文と質問（问）を聞いて、正しい答えを選んでください。', keys: () => idx(SENT_Q.length), gen: k => genSentQ('L4', k) },
+  L2: { sec: 'L', no: 2, name: '絵を選ぶ（文）', desc: '文を聞いて、合う絵を選ぶ', inst: '音声を聞いて、内容に合う絵を選んでください。', keys: () => pool(SENT_PIC), gen: k => genSentPic('L2', k, true) },
+  L3: { sec: 'L', no: 3, name: '会話と絵', desc: '短い会話を聞いて、合う絵を選ぶ', inst: '会話を聞いて、内容に合う絵を選んでください。', keys: () => pool(DIALOG_PIC), gen: k => genDialog('L3', k) },
+  L4: { sec: 'L', no: 4, name: '質問に答える', desc: '文と質問を聞いて、答えを選ぶ', inst: '文と質問（问）を聞いて、正しい答えを選んでください。', keys: () => pool(SENT_Q), gen: k => genSentQ('L4', k) },
   R1: { sec: 'R', no: 1, name: '判断（単語）', desc: '単語と絵が合っているか判断', inst: '単語と絵が合っていれば ✓、違えば ✗ を選んでください。', keys: () => picWords.map(w => w.h), gen: k => genJudge('R1', k, false) },
-  R2: { sec: 'R', no: 2, name: '文と絵', desc: '文を読んで、合う絵を選ぶ', inst: '文を読んで、内容に合う絵を選んでください。', keys: () => idx(SENT_PIC.length), gen: k => genSentPic('R2', k, false) },
-  R3: { sec: 'R', no: 3, name: '問いと答え', desc: '問いに合う答えを選ぶ', inst: '問いに対する答えとして正しいものを選んでください。', keys: () => idx(QA.length), gen: k => genQA('R3', k) },
-  R4: { sec: 'R', no: 4, name: '空欄補充', desc: '空欄に入る語を選ぶ', inst: '（　）に入る語を選んでください。', keys: () => idx(FILL.length), gen: k => genFill('R4', k) },
+  R2: { sec: 'R', no: 2, name: '文と絵', desc: '文を読んで、合う絵を選ぶ', inst: '文を読んで、内容に合う絵を選んでください。', keys: () => pool(SENT_PIC), gen: k => genSentPic('R2', k, false) },
+  R3: { sec: 'R', no: 3, name: '問いと答え', desc: '問いに合う答えを選ぶ', inst: '問いに対する答えとして正しいものを選んでください。', keys: () => pool(QA), gen: k => genQA('R3', k) },
+  R4: { sec: 'R', no: 4, name: '空欄補充', desc: '空欄に入る語を選ぶ', inst: '（　）に入る語を選んでください。', keys: () => pool(FILL), gen: k => genFill('R4', k) },
 };
 const partLabel = id => `${PARTS[id].sec === 'L' ? 'リスニング' : 'リーディング'} 第${PARTS[id].no}部分`;
 
@@ -439,6 +441,8 @@ function renderSettings() {
     <div class="set">
       <label><span>ピンインを表示<small>リーディングの問題文・選択肢にピンインを付けます（本番のHSK1級も付いています）</small></span><input type="checkbox" id="s-py" ${settings.pinyin ? 'checked' : ''}></label>
       <label><span>読み上げ速度 <b id="rv">${settings.rate.toFixed(2)}</b><small>本番に近いのは 0.8〜0.9 くらい</small></span><input type="range" id="s-rate" min="0.5" max="1.2" step="0.05" value="${settings.rate}"></label>
+      <label><span>例文のテーマ<small>アークナイツ（明日方舟）のキャラクターが出てくる例文を混ぜられます。単語帳と判断問題は共通です</small></span>
+        <select id="s-th"><option value="mix" ${settings.theme === 'mix' ? 'selected' : ''}>ふつう＋アークナイツ</option><option value="std" ${settings.theme === 'std' ? 'selected' : ''}>ふつうのみ</option><option value="ak" ${settings.theme === 'ak' ? 'selected' : ''}>アークナイツのみ</option></select></label>
       <label><span>練習でも2回ずつ流す<small>本番は各問題が2回読まれます（模擬試験は常に2回）</small></span><input type="checkbox" id="s-tw" ${settings.twice ? 'checked' : ''}></label>
       ${TTS.hasFiles ? `<div class="item"><span>音声<small>収録音声（女性：Xiaoxiao／男性：Yunxi）を使用しています</small></span></div>` : `<label><span>音声<small>${vs.length ? `${vs.length}件の中国語音声があります` : '中国語の音声が見つかりません'}</small></span>
         <select id="s-v" ${vs.length ? '' : 'disabled'}><option value="">自動</option>${vs.map(v => `<option ${v.name === settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>`}
@@ -446,6 +450,7 @@ function renderSettings() {
       <div class="item"><span>学習記録を消す<small>ベストスコアと復習リストを削除します</small></span><button class="btn" id="s-reset">リセット</button></div>
     </div>`;
   $('#s-py').onchange = e => { settings.pinyin = e.target.checked; saveSettings(); };
+  $('#s-th').onchange = e => { settings.theme = e.target.value; saveSettings(); };
   $('#s-tw').onchange = e => { settings.twice = e.target.checked; saveSettings(); };
   $('#s-rate').oninput = e => { settings.rate = +e.target.value; $('#rv').textContent = settings.rate.toFixed(2); saveSettings(); };
   if ($('#s-v')) $('#s-v').onchange = e => { settings.voice = e.target.value; saveSettings(); };
