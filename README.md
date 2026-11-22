@@ -24,18 +24,6 @@ PC・スマホ・タブレットに対応しています。ビルドやサーバ
 
 ベストスコア・復習リスト・設定はブラウザの `localStorage` に保存されます（端末ごと）。
 
-## 使い方
-
-`index.html` をブラウザで開くだけで使えます。
-
-ローカルサーバーで開く場合の例：
-
-```powershell
-python -m http.server 8000
-```
-
-その後 http://localhost:8000 を開きます。GitHub Pages などの静的ホスティングにそのまま置くこともできます。
-
 ## 音声について
 
 音声は Microsoft Edge TTS（女性：Xiaoxiao／男性：Yunxi）で事前に生成した MP3 を `audio/` に収録しています。
