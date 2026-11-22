@@ -130,7 +130,7 @@ function exLine(zh, p, j, who) {
 function genSentPic(part, i, listen) {
   const it = SENT_PIC[i];
   return {
-    part, key: i, kind: 'pics',
+    part, key: i, kind: 'pics', ak: !!it.ak,
     audio: listen ? [{ t: it.s }] : null,
     show: listen ? '' : `<div lang="zh-Hans" class="zh mid">${esc(it.s)}</div>${py(it.p)}`,
     ...picOpts(it.a, it.d),
@@ -140,7 +140,7 @@ function genSentPic(part, i, listen) {
 function genDialog(part, i) {
   const it = DIALOG_PIC[i];
   return {
-    part, key: i, kind: 'pics',
+    part, key: i, kind: 'pics', ak: !!it.ak,
     audio: it.d.map(l => ({ t: l[1], who: l[0] })),
     show: '',
     ...picOpts(it.a, it.x),
@@ -154,7 +154,7 @@ function textOpts(list, correct) {
 function genSentQ(part, i) {
   const it = SENT_Q[i];
   return {
-    part, key: i, kind: 'text',
+    part, key: i, kind: 'text', ak: !!it.ak,
     audio: [{ t: it.s }, { t: '问：' + it.q, who: 'm' }],
     show: '',
     ...textOpts(it.o, it.o[0][0]),
@@ -165,7 +165,7 @@ function genQA(part, i) {
   const it = QA[i];
   const others = shuffle(QA.filter((x, k) => k !== i && !x.ak === !it.ak)).slice(0, 2); // 同じテーマの答えから選ぶ（人名で正解がバレないように）
   return {
-    part, key: i, kind: 'text',
+    part, key: i, kind: 'text', ak: !!it.ak,
     audio: null,
     show: `<div lang="zh-Hans" class="zh mid">${esc(it.q)}</div>${py(it.qp)}`,
     ...textOpts([[it.a, it.ap], ...others.map(x => [x.a, x.ap])], it.a),
@@ -177,7 +177,7 @@ function genFill(part, i) {
   const list = it.o.map(h => [h, (wordOf(h) || { p: '' }).p]);
   const full = it.s.replace('（　）', `<u>${esc(it.o[0])}</u>`);
   return {
-    part, key: i, kind: 'text',
+    part, key: i, kind: 'text', ak: !!it.ak,
     audio: null,
     show: `<div lang="zh-Hans" class="zh mid">${esc(it.s)}</div>`,
     ...textOpts(list, it.o[0]),
@@ -186,6 +186,7 @@ function genFill(part, i) {
 }
 const idx = n => Array.from({ length: n }, (_, i) => i);
 // 例文テーマ（設定）に合う問題の番号だけを返す  std=ふつう ak=アークナイツ mix=両方
+const THEMES = [['std', 'ふつう'], ['ak', 'アークナイツ'], ['mix', '両方']];
 const pool = list => idx(list.length).filter(i => settings.theme === 'mix' || (settings.theme === 'ak') === !!list[i].ak);
 const PARTS = {
   L1: { sec: 'L', no: 1, name: '判断（単語）', desc: '単語を聞き、絵と合っていれば ✓、違えば ✗', inst: '音声を聞いて、絵と合っていれば ✓、違えば ✗ を選んでください。', keys: () => picWords.map(w => w.h), gen: k => genJudge('L1', k, true) },
@@ -285,6 +286,11 @@ function renderHome() {
         ${gauge(b.mock)}
       </div>
     </section>
+    <fieldset class="theme" aria-describedby="theme-d">
+      <legend>例文</legend>
+      ${THEMES.map(([v, l]) => `<label><input type="radio" name="theme" value="${v}" ${settings.theme === v ? 'checked' : ''}><span class="box" aria-hidden="true"></span>${l}</label>`).join('')}
+      <span class="d" id="theme-d">単語の判断問題は共通です</span>
+    </fieldset>
     <div class="sections">
       ${sec('听力', 'リスニング', ['L1', 'L2', 'L3', 'L4'])}
       ${sec('阅读', 'リーディング', ['R1', 'R2', 'R3', 'R4'])}
@@ -294,6 +300,7 @@ function renderHome() {
       <button class="tile" data-nav="#/words"><div class="t">単語帳（150語）</div><div class="d">タップで発音を確認できます</div></button>
     </div>`;
   app.querySelectorAll('[data-part]').forEach(el => el.onclick = () => startPractice(el.dataset.part));
+  app.querySelectorAll('[name=theme]').forEach(r => r.onchange = () => { settings.theme = r.value; saveSettings(); });
   $('#mock').onclick = startMock;
   $('#review').onclick = startReview;
   checkVoice();
@@ -318,7 +325,7 @@ function renderQ() {
     <div class="qhead"><span>${esc(S.title)}</span><b>${S.i + 1} / ${n}</b></div>
     <div class="seg" aria-hidden="true">${seg}</div>
     <section class="qbox">
-      <p class="inst"><b>${partLabel(q.part)}</b>${P.inst}</p>
+      <p class="inst"><b>${partLabel(q.part)}</b>${P.inst}${q.ak ? '<span class="ak-tag">アークナイツ</span>' : ''}</p>
       <div class="stage">
         ${q.audio ? `<button class="play" id="play" aria-label="音声をもう一度聞く">${ICON_PLAY}<span class="lbl">もう一度聞く</span></button>` : ''}
         ${q.show}
@@ -442,7 +449,7 @@ function renderSettings() {
       <label><span>ピンインを表示<small>リーディングの問題文・選択肢にピンインを付けます（本番のHSK1級も付いています）</small></span><input type="checkbox" id="s-py" ${settings.pinyin ? 'checked' : ''}></label>
       <label><span>読み上げ速度 <b id="rv">${settings.rate.toFixed(2)}</b><small>本番に近いのは 0.8〜0.9 くらい</small></span><input type="range" id="s-rate" min="0.5" max="1.2" step="0.05" value="${settings.rate}"></label>
       <label><span>例文のテーマ<small>アークナイツ（明日方舟）のキャラクターが出てくる例文を混ぜられます。単語帳と判断問題は共通です</small></span>
-        <select id="s-th"><option value="mix" ${settings.theme === 'mix' ? 'selected' : ''}>ふつう＋アークナイツ</option><option value="std" ${settings.theme === 'std' ? 'selected' : ''}>ふつうのみ</option><option value="ak" ${settings.theme === 'ak' ? 'selected' : ''}>アークナイツのみ</option></select></label>
+        <select id="s-th">${THEMES.map(([v, l]) => `<option value="${v}" ${settings.theme === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
       <label><span>練習でも2回ずつ流す<small>本番は各問題が2回読まれます（模擬試験は常に2回）</small></span><input type="checkbox" id="s-tw" ${settings.twice ? 'checked' : ''}></label>
       ${TTS.hasFiles ? `<div class="item"><span>音声<small>収録音声（女性：Xiaoxiao／男性：Yunxi）を使用しています</small></span></div>` : `<label><span>音声<small>${vs.length ? `${vs.length}件の中国語音声があります` : '中国語の音声が見つかりません'}</small></span>
         <select id="s-v" ${vs.length ? '' : 'disabled'}><option value="">自動</option>${vs.map(v => `<option ${v.name === settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>`}
