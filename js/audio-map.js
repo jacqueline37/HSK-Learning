@@ -528,7 +528,7 @@ const AUDIO = {
 "f|刻俄柏在吃米饭。": "audio/cd354d06e209.mp3",
 "f|博士在看书。": "audio/afff2ccc8f9f.mp3",
 "f|阿米娅在打电话。": "audio/f929e5a815d2.mp3",
-"f|伊芙利特说：“今天太热了！”": "audio/4600721c9aa9.mp3",
+"f|伊芙利特说：“这个房间太冷了！”": "audio/dbeeb39cbd82.mp3",
 "f|可露希尔的商店有很多东西。": "audio/e6d075d9baa3.mp3",
 "f|博士在椅子上睡觉了。": "audio/d93c92e9769d.mp3",
 "f|这是罗德岛的电脑。": "audio/1df9d523cb0a.mp3",
