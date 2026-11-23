@@ -216,22 +216,27 @@ function genFill(part, list, i) {
     explain: `<div class="ln"><span lang="zh-Hans" class="zh">${full}</span><br>${esc(it.p)}<br><span class="ja">${esc(it.j)}</span></div>`,
   };
 }
-// 書写：漢字の欠けている部分を選ぶ（2級）
-const POS = { l: '左', t: '上', b: '下', o: '外側' };
+// 書写：語のうち1字が一部だけ書かれていて、足りない部分を選ぶ（2級）
+// 本番の答案と同じく、1字ずつピンインを付けたマス目で見せる
+const POS = { l: '左', r: '右', t: '上', b: '下', o: '外側', i: '内側', ir: '内側' };
 function genPart(part, list, i) {
   const it = list[i];
   const all = [...new Set(list.map(x => x.a))].filter(a => a !== it.a);
   const same = shuffle(all.filter(a => list.some(x => x.a === a && x.pos === it.pos)));
   const d = [...same, ...shuffle(all.filter(a => !same.includes(a)))].slice(0, 3);
-  const word = esc(it.w).replace(esc(it.c), '<span class="blank" aria-label="空欄">　</span>');
+  const pys = it.wp.split(/\s+/);
+  const cells = [...it.w].map((ch, k) => `<span class="kc"><span class="kc-py" lang="zh-Latn-pinyin">${esc(pys[k] || '')}</span>` +
+    (ch === it.c
+      ? `<span class="kc-box part pos-${it.pos}"><span class="have" lang="zh-Hans">${esc(it.r)}</span><span class="miss" aria-hidden="true">？</span></span>`
+      : `<span class="kc-box" lang="zh-Hans">${esc(ch)}</span>`) + '</span>').join('');
   return {
     part, key: i, kind: 'text', cls: 'four rad',
     audio: null,
-    show: `<div class="kj pos-${it.pos}" aria-label="欠けている部分は${POS[it.pos]}"><span class="miss">？</span><span class="have zh">${esc(it.r)}</span></div>
-      <div class="kj-word"><span lang="zh-Hans" class="zh">${word}</span><span class="py" lang="zh-Latn-pinyin">${esc(it.wp)}</span><span class="ja">${esc(it.wj)}</span></div>
-      <p class="kj-hint">欠けているのは<b>${POS[it.pos]}</b>の部分</p>`,
+    show: `<div class="kw" role="img" aria-label="${esc(it.wp)}。${esc(it.c)}の${POS[it.pos]}の部分が欠けています">${cells}</div>
+      <div class="kw-ja">${esc(it.wj)}</div>
+      <p class="kj-hint">点線の部分（<b>${POS[it.pos]}</b>）に入るものを選んでください</p>`,
     ...textOpts([it.a, ...d].map(a => [a, '']), it.a),
-    explain: `<div class="ln"><span lang="zh-Hans" class="zh">${esc(it.a)}</span> ＋ <span lang="zh-Hans" class="zh">${esc(it.r)}</span> ＝ <span lang="zh-Hans" class="zh"><u>${esc(it.c)}</u></span></div>` +
+    explain: `<div class="ln"><span lang="zh-Hans" class="zh">${esc(it.r)}</span> ＋ <span lang="zh-Hans" class="zh">${esc(it.a)}</span> ＝ <span lang="zh-Hans" class="zh"><u>${esc(it.c)}</u></span></div>` +
       `<div class="ln"><span lang="zh-Hans" class="zh">${esc(it.w)}</span>　${esc(it.wp)}　<span class="ja">${esc(it.wj)}</span></div>`,
   };
 }
@@ -280,7 +285,7 @@ const PARTS = {
   '2R2': { lv: 2, sec: 'R', no: 2, name: '空欄補充', desc: '空欄に入る語を選ぶ', inst: '（　）に入る語を選んでください。', list: FILL2, gen: k => genFill('2R2', FILL2, k) },
   '2R3': { lv: 2, sec: 'R', no: 3, name: '文と応答', desc: '文に合う応答を選ぶ', inst: '文に続く応答として正しいものを選んでください。', list: QA2, gen: k => genQA('2R3', QA2, k, false) },
   '2R4': { lv: 2, sec: 'R', no: 4, name: '短文と問い', desc: '短い文を読んで、★の問いに答える', inst: '文を読んで、★の問いの答えを選んでください。', list: READ2, gen: k => genSentQ('2R4', READ2, k, false) },
-  '2W1': { lv: 2, sec: 'W', no: 1, name: '漢字の部分', desc: '漢字の欠けている部分を選ぶ', inst: '語の意味とピンインを手がかりに、漢字の欠けている部分を選んでください。', list: PART2, gen: k => genPart('2W1', PART2, k) },
+  '2W1': { lv: 2, sec: 'W', no: 1, name: '漢字の部分', desc: '一部だけ書かれた字の、足りない部分を選ぶ', inst: 'ピンインと意味を手がかりに、点線の部分に入るものを選んでください。', list: PART2, gen: k => genPart('2W1', PART2, k) },
   '2W2': { lv: 2, sec: 'W', no: 2, name: '漢字を書く', desc: 'ピンインを見て、入る漢字を選ぶ', inst: 'ピンインを見て、（　）に入る漢字を選んでください（本番は手で書きます）。', list: HANZI2, gen: k => genHanzi('2W2', HANZI2, k) },
   '2D1': { lv: 2, sec: 'D', no: 1, name: '単語と絵（聞く）', desc: '2級の単語を聞き、絵と合っていれば ✓', inst: '音声を聞いて、絵と合っていれば ✓、違えば ✗ を選んでください。', words: VOCAB2, gen: k => genJudge('2D1', VOCAB2, k, true) },
   '2D2': { lv: 2, sec: 'D', no: 2, name: '単語と絵（読む）', desc: '2級の単語を読み、絵と合っていれば ✓', inst: '単語と絵が合っていれば ✓、違えば ✗ を選んでください。', words: VOCAB2, gen: k => genJudge('2D2', VOCAB2, k, false) },
