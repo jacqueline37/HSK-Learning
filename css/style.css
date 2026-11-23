@@ -245,3 +245,55 @@ table.bd td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-w
   .wave i{animation:none}
   *{scroll-behavior:auto !important}
 }
+
+/* ---------- 級の切り替え・2級の書写 ---------- */
+.top{flex-wrap:wrap}
+.lvsw{display:flex;border:1.5px solid var(--ink);border-radius:var(--r);overflow:hidden;margin-right:auto}
+.lvsw button{background:transparent;border:0;padding:6px 14px;min-height:36px;min-width:52px;font-size:14px;font-weight:700;cursor:pointer;color:var(--muted)}
+.lvsw button+button{border-left:1.5px solid var(--ink)}
+.lvsw button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lvsw button:hover:not([aria-pressed="true"]){background:var(--sheet-2);color:var(--ink)}
+.lv-eyebrow{margin:0 0 4px;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.sections.three{grid-template-columns:repeat(3,1fr)}
+.sections.drills{grid-template-columns:1fr 1fr}
+.sections.drills .parts{display:grid;grid-template-columns:1fr 1fr;column-gap:28px}
+.note{color:var(--muted);font-size:12px;margin:18px 0 0}
+.seg.thin{gap:2px}
+.opts.four{grid-template-columns:1fr 1fr}
+.opts.four .opt .zh{font-size:24px}
+.zh.para{font-size:21px;line-height:1.7;text-align:left}
+.zh.q{font-size:19px;text-align:left}
+.passage,.star{text-align:left;max-width:34em;margin:0 auto}
+.star{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}
+/* 漢字の部分：欠けているほうを点線の枠で示す */
+.kj{display:inline-flex;align-items:center;justify-content:center;gap:2px;width:132px;height:132px;border:1.5px solid var(--ink);
+  border-radius:var(--r);background:var(--sheet);margin:4px auto 12px;font-family:var(--zh)}
+.kj .miss{display:grid;place-items:center;border:2px dashed var(--pen);border-radius:3px;color:var(--pen);font-family:var(--ui);font-weight:700;font-size:22px}
+.kj .have{font-size:64px;font-weight:700;line-height:1}
+.kj.pos-l .miss{width:38px;height:96px}
+.kj.pos-t,.kj.pos-b{flex-direction:column}
+.kj.pos-t .miss,.kj.pos-b .miss{width:96px;height:30px}
+.kj.pos-b .miss{order:2}
+.kj.pos-t .have,.kj.pos-b .have{font-size:56px}
+.kj.pos-o{position:relative}
+.kj.pos-o .miss{position:absolute;inset:8px;border-radius:6px;place-items:end start;padding:2px 8px}
+.kj-word{display:flex;flex-direction:column;align-items:center;gap:2px}
+.kj-word .zh{font-size:28px;font-weight:700}
+.kj-word .ja{font-size:13px;color:var(--muted)}
+.blank{display:inline-block;width:1.1em;border-bottom:2px solid var(--ink);margin:0 .08em}
+.kj-hint{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.kj-hint b{color:var(--ink)}
+@media (max-width:720px){
+  .sections.three{grid-template-columns:1fr}
+  .sections.drills,.sections.drills .parts{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .top{gap:8px 10px}
+  .logo{font-size:15px}
+  .lvsw button{padding:6px 10px;min-width:44px}
+}
+.opts.rad .opt{justify-content:flex-start}
+.opts.rad .opt .zh{font-size:34px;line-height:1.1}
+@media (max-width:400px){
+  .logo-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
